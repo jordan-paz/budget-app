@@ -24,7 +24,7 @@ function ExpenseItem (props) {
             <form>
                 <label>
                     Item:
-                    <input type="text" defaultValue={props.name} />
+                    <input type="text" value={props.name} />
                 </label>
                 <br/>
                 <label>
@@ -33,12 +33,65 @@ function ExpenseItem (props) {
                         type="text"
                         onChange={props.handleExpenseAmountChange}
                         name={props.name} 
-                        defaultValue={props.amount}/>
+                        value={props.amount}/>
                 </label>
             </form>
+            <h4>Amount Remaining in budget: {props.amountRemaining}</h4>
             <br/>
         </div>
     );
+}
+
+class Spend extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: "",
+            amountSpent: ""
+        }
+        this.handleAmountSpentChange = this.handleAmountSpentChange.bind(this);
+        this.handleNameChange = this.handleNameChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    };
+
+    handleNameChange(e) {
+        const name = e.target.value;
+        this.setState({name: name});
+    }
+    handleAmountSpentChange(e) {
+        const amountSpent = e.target.value;
+        this.setState({amountSpent: amountSpent});
+    }
+    handleSubmit(e) {
+        e.preventDefault();
+        const transaction = {
+            name: this.state.name,
+            amountSpent: this.state.amountSpent
+        }
+        this.props.spend(transaction)
+        this.setState({
+            name: "",
+            amountSpent: ""
+        })
+    }
+
+    render() {
+        return (
+            <div>
+                <h1>Spend</h1>
+                <form onSubmit={this.handleSubmit}>
+                    <label>Item Name:</label>
+                    <input type="text" value={this.state.name} onChange={this.handleNameChange}/>
+                    <br/>
+                    <label>Amount Spent:</label>
+                    <input type="text" value={this.state.amountSpent} onChange={this.handleAmountSpentChange}/>
+                    <br/>
+                    <button type="submit">Submit</button>
+                </form>
+                <br/>
+            </div>
+        )
+    }
 }
 
 class AddExpense extends React.Component {
@@ -46,7 +99,8 @@ class AddExpense extends React.Component {
         super(props);
         this.state = {
             name: "",
-            amount: ""
+            amount: "",
+            amountRemaining: ""
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -66,12 +120,14 @@ class AddExpense extends React.Component {
         e.preventDefault();
         const expense = {
             name: this.state.name,
-            amount: this.state.amount
+            amount: Number(this.state.amount),
+            amountRemaining: Number(this.state.amount)
         }
         this.props.addExpense(expense)
         this.setState({
             name: "",
-            amount: ""
+            amount: "",
+            amountRemaining: ""
         })
     }
 
@@ -81,10 +137,10 @@ class AddExpense extends React.Component {
                 <h1>Add Expense</h1>
                 <form onSubmit={this.handleSubmit}>
                     <label>Item Name:</label>
-                    <input type="text" placeholder={this.state.name} onChange={this.handleNameChange}/>
+                    <input type="text" value={this.state.name} onChange={this.handleNameChange}/>
                     <br/>
                     <label>Amount:</label>
-                    <input type="text" placeholder={this.state.amount} onChange={this.handleAmountChange}/>
+                    <input type="text" value={this.state.amount} onChange={this.handleAmountChange}/>
                     <br/>
                     <button type="submit">Submit</button>
                 </form>
@@ -107,12 +163,21 @@ class Budget extends React.Component {
         this.handleIncomeChange = this.handleIncomeChange.bind(this);
         this.handleExpenseAmountChange = this.handleExpenseAmountChange.bind(this);
         this.handleExpenseNameChange = this.handleExpenseNameChange.bind(this);
+        this.spend = this.spend.bind(this);
     }
 
     componentDidUpdate() {
         console.log(this.state.expenses)
     }
 
+    spend(transaction) {
+        const expenses = [...this.state.expenses];
+        const index = expenses.findIndex(expense => expense.name === transaction.name);
+        if (expenses[index]) {
+            expenses[index].amountRemaining -= Number(transaction.amountSpent);
+            this.setState({expenses: expenses});
+        }
+    } 
 
     addExpense(expense) {
         let expenses = [...this.state.expenses]
@@ -141,12 +206,12 @@ class Budget extends React.Component {
 
     handleExpenseNameChange(e) {
         const name = e.target.value;
-        const index = this.state.expenses.findIndex(expense => expense.name === e.target.name)
         const expenses = [...this.state.expenses]
+        const index = expenses.findIndex(expense => expense.name === e.target.name)
 
         expenses[index] = {
             name: name,
-            amount: expenses[index].amount
+            amount: expenses[index].amount,
         }
     }
 
@@ -187,8 +252,13 @@ class Budget extends React.Component {
                             name={expense.name} 
                             handleExpenseAmountChange={this.handleExpenseAmountChange}
                             handleExpenseNameChange={this.handleExpenseNameChange}
-                            amount={expense.amount} />
+                            amount={expense.amount} 
+                            amountRemaining={expense.amountRemaining}/>
                     })}
+                </section>
+
+                <section id="spend">
+                    <Spend spend={this.spend}/>
                 </section>
             </div>
         )
