@@ -1,275 +1,183 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import AddExpenseCategory from "./components/AddExpenseCategory";
+import Spend from "./components/Spend";
+import ExpenseCategory from "./components/ExpenseCategory";
+import 'bootstrap/dist/css/bootstrap.css';
+import './index.css'; 
+import { Line } from 'rc-progress';
 
-function MonthlyIncome (props) {
-    return (
-        <form>
-            <label>
-                Monthly Income:
-                <input type="text" value={props.amount} onChange={props.handleChange}/>
-            </label>
-        </form>
-    );
-}
-
-function RemainingMoney (props) { 
-    return <p>Remaining Money: ${props.remainingMoney}</p>
-}  
-
-
-function ExpenseItem (props) {
-    return (
-        <div>
-            <form>
-                <label>
-                    Item:
-                    <input type="text" value={props.name} />
-                </label>
-                <br/>
-                <label>
-                    Amount:
-                    <input 
-                        type="text"
-                        onChange={props.handleExpenseAmountChange}
-                        name={props.name} 
-                        value={props.amount}/>
-                </label>
-            </form>
-            <h4>Amount Remaining in budget: {props.amountRemaining}</h4>
-            <br/>
-        </div>
-    );
-}
-
-class Spend extends React.Component {
+class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
-            amountSpent: ""
-        }
-        this.handleAmountSpentChange = this.handleAmountSpentChange.bind(this);
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    };
-
-    handleNameChange(e) {
-        const name = e.target.value;
-        this.setState({name: name});
-    }
-    handleAmountSpentChange(e) {
-        const amountSpent = e.target.value;
-        this.setState({amountSpent: amountSpent});
-    }
-    handleSubmit(e) {
-        e.preventDefault();
-        const transaction = {
-            name: this.state.name,
-            amountSpent: this.state.amountSpent
-        }
-        this.props.spend(transaction)
-        this.setState({
-            name: "",
-            amountSpent: ""
-        })
-    }
-
-    render() {
-        return (
-            <div>
-                <h1>Spend</h1>
-                <form onSubmit={this.handleSubmit}>
-                    <label>Item Name:</label>
-                    <input type="text" value={this.state.name} onChange={this.handleNameChange}/>
-                    <br/>
-                    <label>Amount Spent:</label>
-                    <input type="text" value={this.state.amountSpent} onChange={this.handleAmountSpentChange}/>
-                    <br/>
-                    <button type="submit">Submit</button>
-                </form>
-                <br/>
-            </div>
-        )
-    }
-}
-
-class AddExpense extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: "",
-            amount: "",
-            amountRemaining: ""
-        }
-
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleAmountChange = this.handleAmountChange.bind(this);
-    };
-
-    handleNameChange(e) {
-        const name = e.target.value;
-        this.setState({name: name});
-    }
-    handleAmountChange(e) {
-        const amount = e.target.value;
-        this.setState({amount: amount});
-    }
-    handleSubmit(e) {
-        e.preventDefault();
-        const expense = {
-            name: this.state.name,
-            amount: Number(this.state.amount),
-            amountRemaining: Number(this.state.amount)
-        }
-        this.props.addExpense(expense)
-        this.setState({
-            name: "",
-            amount: "",
-            amountRemaining: ""
-        })
-    }
-
-    render() {
-        return (
-            <div>
-                <h1>Add Expense</h1>
-                <form onSubmit={this.handleSubmit}>
-                    <label>Item Name:</label>
-                    <input type="text" value={this.state.name} onChange={this.handleNameChange}/>
-                    <br/>
-                    <label>Amount:</label>
-                    <input type="text" value={this.state.amount} onChange={this.handleAmountChange}/>
-                    <br/>
-                    <button type="submit">Submit</button>
-                </form>
-                <br/>
-            </div>
-        )
-    }
-}
-
-class Budget extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            income: "",
-            expenses: [],
-            remainingMoney: ""
+            income: 2000,
+            totalSpent: 0,
+            categories: [
+                {name: "Rent/Mortgage", spent: 0, icon: "🏠"},
+                {name: "Utilities", spent: 0, icon: "💡"},
+                {name: "Groceries", spent: 0, icon: "🛒"},
+                {name: "Phone", spent: 0, icon: "📞"},
+                {name: "Eating Out", spent: 0, icon: "🍔"},
+                {name: "Gas", spent: 0, icon: "⛽"},
+                {name: "Entertainment", spent: 0, icon: "🍿"}
+            ],
+            transactions: [],
+            spent: 0,
+            spendButtonClicked: false,
+            addCategoryButtonClicked: false
         };
         
-        this.addExpense = this.addExpense.bind(this)
-        this.handleIncomeChange = this.handleIncomeChange.bind(this);
-        this.handleExpenseAmountChange = this.handleExpenseAmountChange.bind(this);
-        this.handleExpenseNameChange = this.handleExpenseNameChange.bind(this);
+        this.addCategory = this.addCategory.bind(this)
+        this.filterTransactions = this.filterTransactions.bind(this);
         this.spend = this.spend.bind(this);
+        this.getTotalSpent = this.getTotalSpent.bind(this);
+        this.handleAddCategoryClick = this.handleAddCategoryClick.bind(this);
+        this.handleSpendClick = this.handleSpendClick.bind(this);
+        this.updateCategory = this.updateCategory.bind(this);
+        this.updateTransactions = this.updateTransactions.bind(this);
+        this.updateTotalSpent = this.updateTotalSpent.bind(this);
     }
 
-    componentDidUpdate() {
-        console.log(this.state.expenses)
-    }
-
+    //Create a transaction and push it to the transactions array.
     spend(transaction) {
-        const expenses = [...this.state.expenses];
-        const index = expenses.findIndex(expense => expense.name === transaction.name);
-        if (expenses[index]) {
-            expenses[index].amountRemaining -= Number(transaction.amountSpent);
-            this.setState({expenses: expenses});
-        }
-    } 
-
-    addExpense(expense) {
-        let expenses = [...this.state.expenses]
-        expenses.push(expense);
-        this.setState({
-            expenses: expenses,
-            remainingMoney: this.state.remainingMoney - expense.amount
-        });
+        this.updateCategory(transaction);
+        this.updateTransactions(transaction);
+        this.updateTotalSpent(transaction);
     }
 
-    getTotalExpenses(expenses) {
-        let totalExpenses = 0;
-        expenses.forEach(expense => {
-            totalExpenses += Number(expense.amount)
-        });
-        return totalExpenses;
+    updateTotalSpent(transaction) {
+        const totalSpent = this.state.totalSpent;
+        const amount = Number(transaction.amount);
+        this.setState({totalSpent: totalSpent + amount })
     }
 
-    handleIncomeChange(e) {
-        const newIncome = e.target.value
-        this.setState({
-            income: newIncome,
-            remainingMoney: newIncome - this.getTotalExpenses(this.state.expenses)
-        });
+    updateTransactions(transaction) {
+        const transactions = [...this.state.transactions];
+        transactions.push(transaction);
+        this.setState({transactions: transactions});
     }
 
-    handleExpenseNameChange(e) {
-        const name = e.target.value;
-        const expenses = [...this.state.expenses]
-        const index = expenses.findIndex(expense => expense.name === e.target.name)
+    updateCategory(transaction) {
+        let categories = [...this.state.categories];
+        const categoryIndex = categories.findIndex(category => category.name === transaction.category);
+        categories[categoryIndex].spent += Number(transaction.amount);
+        console.log(categories[categoryIndex].spent)
+        this.setState({categories: categories});
+    }
+    
 
-        expenses[index] = {
-            name: name,
-            amount: expenses[index].amount,
+    filterTransactions(category) {
+        return this.state.transactions.filter(transaction => transaction.category === category);
+    }
+
+    getCategoryTotalSpent(category) {
+        if(this.filterTransactions(category).length >= 1) {
+            this.getTotalSpent(this.filterTransactions(category))
+        } else {
+            return 0;
         }
     }
 
-    handleExpenseAmountChange(e) {
-        const target = e.target;
-        const amount = target.value;
-        const index = this.state.expenses.findIndex(expense => expense.name === target.name)
-        const expenses = [...this.state.expenses]
+    addCategory(category) {
+        let categories = [...this.state.categories]
+        categories.push(category);
+        this.setState({categories: categories});
+    }
 
-        expenses[index] = {
-            name: target.name,
-            amount: amount
-        }
-
-        this.setState({
-            expenses: expenses,
-            remainingMoney: this.state.income - this.getTotalExpenses(expenses)
+    getTotalSpent(transactions) {
+        let totalSpent = 0;
+        transactions.forEach(transaction => {
+            totalSpent += Number(transaction.amount)
         });
+        return totalSpent;
+    }
+
+    handleAddCategoryClick() {
+        this.setState({addCategoryButtonClicked: !this.state.addCategoryButtonClicked});
+    }
+
+    handleSpendClick() {
+        this.setState({spendButtonClicked: !this.state.spendButtonClicked});
     }
 
     render() {
+        let progressPercent = (this.state.income - this.state.totalSpent) / this.state.income * 100;
+        
         return (
-            <div>
-                <section id="income"> 
-                    <MonthlyIncome amount={this.state.income} handleChange={this.handleIncomeChange}/>
-                </section>
+            <div className="container">
 
-                <section id="remaining-money"> 
-                    <RemainingMoney remainingMoney={this.state.remainingMoney}/>
-                </section>
-    
-                <section id="expenses">
-                    <AddExpense addExpense={this.addExpense}/>
-                    <h1>Expenses</h1> 
-                    {this.state.expenses.map((expense) => {
-                        return <ExpenseItem  
-                            key={expense.name} 
-                            name={expense.name} 
-                            handleExpenseAmountChange={this.handleExpenseAmountChange}
-                            handleExpenseNameChange={this.handleExpenseNameChange}
-                            amount={expense.amount} 
-                            amountRemaining={expense.amountRemaining}/>
+                
+                <div className="container" id="top-area">
+                    <h4>March</h4>
+                    <div className="container">
+                        <h2>Remaining in Budget</h2> 
+                        <h3 className="green-text">${this.state.income - this.state.totalSpent}/${this.state.income}</h3>
+
+                        <div >
+                            <Line trailWidth="4" percent={progressPercent} strokeWidth="4" strokeColor="rgb(20, 180, 20)" />
+                        </div>
+                        
+
+
+                    </div>
+                </div>
+                {this.state.spendButtonClicked ? 
+                    <section id="spend">
+                        <Spend spend={this.spend} handleSpendClick={this.handleSpendClick}/>
+                    </section>
+                    :
+                    <div className="container" id="expenses">
+                    
+                    <section id="expenses-header">
+                        <h3>Expenses</h3>
+                        
+                    </section>
+
+                    {this.state.addCategoryButtonClicked ? 
+                        <AddExpenseCategory addCategory={this.addCategory}/> 
+                        :
+                        <div>
+                            <p>
+                                <button onClick={this.handleAddCategoryClick}id="add-category-button">
+                                    + Add Category
+                                </button>
+                            </p> 
+                        </div> 
+                    
+                    }
+                    
+                    {this.state.categories.map((category) => {
+                        return <ExpenseCategory  
+                            key={category.name}
+                            icon={category.icon} 
+                            category={category.name}
+                            spent={category.spent}
+                            transactions={this.filterTransactions(category.name)}/>
                     })}
-                </section>
+                    
+                </div>
+                }
 
-                <section id="spend">
-                    <Spend spend={this.spend}/>
-                </section>
+                {!this.state.spendButtonClicked ? 
+                    <button 
+                    onClick={this.handleSpendClick}
+                    type="button" 
+                    className="btn btn-danger" 
+                    id="spend-button">
+                        Spend
+                    </button>
+                    :
+                    ""
+                }
+
+                <div id="bottom"></div>
             </div>
         )
     };  
 }
 
-let App = () => { return < Budget /> }
-
-  
 ReactDOM.render(
 <App />,
 document.getElementById('root')
 );
-  

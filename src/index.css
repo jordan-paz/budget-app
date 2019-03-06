@@ -1,0 +1,116 @@
+body {
+    font-family:'Montserrat', sans-serif;
+    background-color: #282c35;
+    color: rgb(245,245,245);
+}
+
+.green-text {
+    color: rgb(20, 180, 20)
+}
+
+.red-text {
+    color: rgb(173, 26, 26);
+}
+
+#top-area {
+    padding: 0;
+    margin-top: 5%;
+}
+
+#top-area h4 {
+    font-size: 1.3em;
+}
+
+#top-area h2 {
+    margin-top: 10%;
+    color: rgb(245,245,245);
+    font-size: 1.5em;
+    
+}
+
+#top-area h3 {
+    
+    font-size: 2.0em;
+}
+
+#spend {
+    margin-top: 10%;
+}
+
+#spend h3 {
+    font-size: 1.5em;
+}
+
+#expenses {
+    margin-top: 10%;
+}
+
+#expenses h3 {
+    font-size: 1.5em;
+    display: inline;
+}
+
+
+
+#expenses-header {
+    margin-bottom: 20px;
+}
+
+.expense  {
+    font-size: 1.2em;
+    padding-left: 0;
+    margin-left: 20px;
+}
+
+#add-category-button {
+    font-size: 1.2em;
+    padding-left: 0;
+    margin-left: 20px;
+    color: rgb(245,245,245);
+}
+
+#add-category-form {
+    margin-left: 20px;
+}
+
+#add-category-form h3 {
+    font-size: 1.2em;
+}
+
+.emoji {
+    font-size: 1.0em;
+    margin-right: 5px;
+}
+
+#spend-button {
+    font-size: 1.5em;
+    font-weight: 900;
+    position:fixed;
+    bottom: 5%;
+    right: 10%;
+}
+
+#spend-submit-button {
+    font-size: 1.5em;
+    border: 1px solid #fff;
+    position:fixed;
+    bottom: 5%;
+    right: 10%;
+}
+
+#spend-cancel-button {
+    font-size: 1.5em;
+    border: 1px solid #888;
+    color: #888;
+    position:fixed;
+    bottom: 5%;
+    left: 10%;
+}
+
+.progress-bar {
+    width: 100%;
+}
+
+#bottom {
+    height: 100px;
+}
