@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import AddExpenseCategory from "./components/AddExpenseCategory";
 import Spend from "./components/Spend";
 import ExpenseCategory from "./components/ExpenseCategory";
+import EditIncome from "./components/EditIncome"
 import 'bootstrap/dist/css/bootstrap.css';
 import './index.css'; 
 import { Line } from 'rc-progress';
@@ -11,7 +12,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            income: 2000,
+            income: 0,
             totalSpent: 0,
             categories: [
                 {name: "Rent/Mortgage", spent: 0, icon: "🏠"},
@@ -25,7 +26,8 @@ class App extends React.Component {
             transactions: [],
             spent: 0,
             spendButtonClicked: false,
-            addCategoryButtonClicked: false
+            addCategoryButtonClicked: false,
+            editIncomeButtonClicked: false
         };
         
         this.addCategory = this.addCategory.bind(this)
@@ -37,6 +39,7 @@ class App extends React.Component {
         this.updateCategory = this.updateCategory.bind(this);
         this.updateTransactions = this.updateTransactions.bind(this);
         this.updateTotalSpent = this.updateTotalSpent.bind(this);
+        this.updateIncome = this.updateIncome.bind(this);
     }
 
     //Create a transaction and push it to the transactions array.
@@ -66,6 +69,9 @@ class App extends React.Component {
         this.setState({categories: categories});
     }
     
+    updateIncome(newIncome) {
+        this.setState({income: newIncome});
+    }
 
     filterTransactions(category) {
         return this.state.transactions.filter(transaction => transaction.category === category);
@@ -101,13 +107,17 @@ class App extends React.Component {
         this.setState({spendButtonClicked: !this.state.spendButtonClicked});
     }
 
+    handleEditIncomeClick() {
+        this.setState({editIncomeButtonClicked: !this.state.editIncomeButtonClicked})
+    }
+
     render() {
         let progressPercent = (this.state.income - this.state.totalSpent) / this.state.income * 100;
         
         return (
             <div className="container">
 
-                
+                <div><EditIncome updateIncome={this.updateIncome}/></div>
                 <div className="container" id="top-area">
                     <h4>March</h4>
                     <div className="container">
@@ -115,7 +125,7 @@ class App extends React.Component {
                         <h3 className="green-text">${this.state.income - this.state.totalSpent}/${this.state.income}</h3>
 
                         <div >
-                            <Line trailWidth="4" percent={progressPercent} strokeWidth="4" strokeColor="rgb(20, 180, 20)" />
+                            <Line trailWidth="8" percent={progressPercent} strokeWidth="8" strokeColor="rgb(20, 180, 20)" />
                         </div>
                         
 
@@ -124,7 +134,10 @@ class App extends React.Component {
                 </div>
                 {this.state.spendButtonClicked ? 
                     <section id="spend">
-                        <Spend spend={this.spend} handleSpendClick={this.handleSpendClick}/>
+                        <Spend 
+                        categories={this.state.categories} 
+                        spend={this.spend} 
+                        handleSpendClick={this.handleSpendClick}/>
                     </section>
                     :
                     <div className="container" id="expenses">
@@ -140,7 +153,7 @@ class App extends React.Component {
                         <div>
                             <p>
                                 <button onClick={this.handleAddCategoryClick}id="add-category-button">
-                                    + Add Category
+                                    <i className="fas fa-plus-circle"></i> Add Category
                                 </button>
                             </p> 
                         </div> 

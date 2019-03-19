@@ -16,6 +16,12 @@ class Spend extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     };
 
+    getCategoryNames(categories) {
+        let namesArray = [];
+        categories.forEach(category => namesArray.push(category.name));
+        return namesArray;
+    }
+
     handleCategoryChange(e) {
         const category = e.target.value;
         this.setState({category: category});
@@ -61,13 +67,28 @@ class Spend extends React.Component {
             <div className="container" id="spend-page">
                 <h3>Spend</h3>
                 <form onSubmit={this.handleSubmit}>
+    
                     <div className="form-group">
-                        <label>Category</label>
-                        <input type="text" placeholder="Category" className="form-control" value={this.state.category} onChange={this.handleCategoryChange}/>
+                        <select 
+                        className="form-control" 
+                        id="chooseCategory"
+                        type="select"
+                        placeholder="Category" 
+                        value={this.state.category} 
+                        onChange={this.handleCategoryChange}>
+                            <option>Choose Category</option>
+                            {this.getCategoryNames(this.props.categories).map((category) => {
+                                return <option key={category}>{category}</option>
+                            })}
+                        </select>
                     </div>
-                    
+
                     <div className="form-group">
-                        <input type="text" placeholder="Amount" className="form-control" value={this.state.amount} onChange={this.handleAmountChange}/>
+                        <input type="text" 
+                            placeholder="Amount" 
+                            className="form-control" 
+                            value={this.state.amount} 
+                            onChange={this.handleAmountChange}/>
                     </div>
                     
                     <div className="form-group">
@@ -75,7 +96,7 @@ class Spend extends React.Component {
                     </div>
                     
                     <div className="form-group">
-                        <input type="text" placeholder="Note" className="form-control" value={this.state.note} onChange={this.handleNoteChange}/>
+                        <textarea placeholder="Note" className="form-control" value={this.state.note} onChange={this.handleNoteChange}/>
                     </div>
 
                     <button 
@@ -92,7 +113,7 @@ class Spend extends React.Component {
                     className="btn btn-primary">
                         Submit
                     </button>
-                    
+
                 </form>
             </div>
         )

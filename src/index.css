@@ -9,7 +9,7 @@ body {
 }
 
 .red-text {
-    color: rgb(173, 26, 26);
+    color: rgb(255, 10, 10);
 }
 
 #top-area {
@@ -50,23 +50,47 @@ body {
     display: inline;
 }
 
-
+#expenses p {
+    margin: 10px;
+}
 
 #expenses-header {
     margin-bottom: 20px;
 }
 
+.category-amount {
+    margin-left: 10px;
+}
+
+.category-expand-button {
+    float: right;
+    font-size: 1.0em;
+    color: rgb(245,245,245);
+    background: none;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+}
+
 .expense  {
-    font-size: 1.2em;
-    padding-left: 0;
-    margin-left: 20px;
+    border-radius: 10px;
+    background-color: #383c45;
+    border: solid 1px white;
+    font-size: 1.0em;
+    padding: 10px 15px;
+    margin: 20px auto;
 }
 
 #add-category-button {
-    font-size: 1.2em;
+    font-size: 1.0em;
     padding-left: 0;
     margin-left: 20px;
     color: rgb(245,245,245);
+    background: none;
+    padding-left: 20px;
+    border: none;
+    margin: 0;
+    cursor: pointer;
 }
 
 #add-category-form {
@@ -83,7 +107,8 @@ body {
 }
 
 #spend-button {
-    font-size: 1.5em;
+    border-radius: 20% / 50%;
+    font-size: 1.8em;
     font-weight: 900;
     position:fixed;
     bottom: 5%;
