@@ -12,25 +12,36 @@ body {
     color: rgb(255, 10, 10);
 }
 
-#top-area {
+#top-section {
     padding: 0;
     margin-top: 5%;
 }
 
-#top-area h4 {
+#top-section h4 {
     font-size: 1.3em;
 }
 
-#top-area h2 {
+#top-section h2 {
     margin-top: 10%;
     color: rgb(245,245,245);
     font-size: 1.5em;
     
 }
 
-#top-area h3 {
+#top-section h3 {
     
     font-size: 2.0em;
+}
+
+#remaining-text {
+    margin-top: 50px;
+    font-size: 1.5em;
+}
+
+
+#edit-income-button {
+    margin-left: 30px;
+    margin-bottom: 10px;
 }
 
 #spend {
@@ -107,6 +118,7 @@ body {
 }
 
 #spend-button {
+    background-color: #e70c0c;
     border-radius: 20% / 50%;
     font-size: 1.8em;
     font-weight: 900;

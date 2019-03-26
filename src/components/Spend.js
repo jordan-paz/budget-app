@@ -64,7 +64,7 @@ class Spend extends React.Component {
 
     render() {
         return (
-            <div className="container" id="spend-page">
+            <div className="container" id="spend">
                 <h3>Spend</h3>
                 <form onSubmit={this.handleSubmit}>
     

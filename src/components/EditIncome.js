@@ -4,7 +4,7 @@ class EditIncome extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            incomeAmount : 0,
+            incomeAmount : "",
             payFrequency : ""
         }
     
@@ -17,12 +17,14 @@ class EditIncome extends React.Component {
         const payFrequency = this.state.payFrequency;
         const incomeAmount = this.state.incomeAmount
         switch(payFrequency) {
-            case "Monthly":
-                return incomeAmount;
+            
             case "Biweekly": 
                 return incomeAmount * 2;
             case "Weekly":
                 return incomeAmount * 4;
+            default:
+                return incomeAmount;
+            
         }
     }
 
@@ -40,17 +42,19 @@ class EditIncome extends React.Component {
         e.preventDefault()
         const newIncome = this.getMonthlyIncome();
         this.props.updateIncome(newIncome);
+        this.props.handleEditIncomeClick();
     }
 
     render() {
         return(
-            <div className="container" id="spend-page">
+            <div className="container" id="spend-form">
                 <h3>Set Income</h3>
                 <form onSubmit={this.handleSubmit}>
     
                     <div className="form-group">
                         <input 
-                            type="number"
+                            className="form-control"
+                            type="text"
                             placeholder="Income Amount" 
                             value={this.state.incomeAmount} 
                             onChange={this.handleIncomeAmountChange}
@@ -62,7 +66,7 @@ class EditIncome extends React.Component {
                         className="form-control" 
                         id="chooseFrequency"
                         type="select"
-                        placeholder="Pay Fequency"
+                        placeholder="Pay Frequency"
                         onChange={this.handleFrequencyChange}>
                             <option>Monthly</option>
                             <option>Biweekly</option>
@@ -71,7 +75,7 @@ class EditIncome extends React.Component {
                     </div>
     
                     <button 
-                    onClick={this.props.cancelEditIncome} 
+                    onClick={this.props.handleEditIncomeClick} 
                     id="cancel-edit-income-button" 
                     type="button" 
                     className="btn btn-dark">
